@@ -1,48 +1,96 @@
-import 'card_model.dart';
+import 'dart:convert';
+
+import 'hcg_model.dart';
+import 'text_format_model.dart';
 
 enum DesignType {
-  smallDisplayCard('HC1'),
-  bigDisplayCard('HC3'),
-  imageCard('HC5'),
-  smallCardWithArrow('HC6'),
-  dynamicWidthCard('HC9');
+  HC1,
+  HC3,
+  HC5,
+  HC6,
+  HC9;
 
-  final String value;
-  const DesignType(this.value);
-
-  factory DesignType.fromString(String value) {
+  factory DesignType.fromString(String type) {
     return DesignType.values.firstWhere(
-      (type) => type.value == value,
-      orElse: () => DesignType.smallDisplayCard,
+      (e) => e.toString() == 'DesignType.$type',
+      orElse: () => HC1,
     );
   }
 }
 
+List<CardGroup> contextualCardsFromJson(String str) =>
+    List<CardGroup>.from(json.decode(str).map((x) => CardGroup.fromJson(x)));
+
+String contextualCardsToJson(List<CardGroup> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
 class CardGroup {
-  final DesignType designType;
-  final String name;
-  final List<CardModel> cards;
-  final double? height;
-  final bool isScrollable;
+  final int id;
+  final String slug;
+  final String? title;
+  final FormattedText? formattedTitle;
+  final String? description;
+  final FormattedText? formattedDescription;
+  final Map<String, dynamic>? assets;
+  final List<HCG> hcGroups;
 
   CardGroup({
-    required this.designType,
-    required this.name,
-    required this.cards,
-    this.height,
-    required this.isScrollable,
+    required this.id,
+    required this.slug,
+    this.title,
+    this.formattedTitle,
+    this.description,
+    this.formattedDescription,
+    this.assets,
+    required this.hcGroups,
   });
 
-  factory CardGroup.fromJson(Map<String, dynamic> json) {
-    return CardGroup(
-      designType: DesignType.fromString(json['design_type'] ?? ''),
-      name: json['name'] ?? '',
-      cards: (json['cards'] as List?)
-              ?.map((e) => CardModel.fromJson(e))
-              .toList() ??
-          [],
-      height: json['height']?.toDouble(),
-      isScrollable: json['is_scrollable'] ?? false,
-    );
-  }
+  CardGroup copyWith({
+    int? id,
+    String? slug,
+    String? title,
+    FormattedText? formattedTitle,
+    String? description,
+    FormattedText? formattedDescription,
+    Map<String, dynamic>? assets,
+    List<HCG>? hcGroups,
+  }) =>
+      CardGroup(
+        id: id ?? this.id,
+        slug: slug ?? this.slug,
+        title: title ?? this.title,
+        formattedTitle: formattedTitle ?? this.formattedTitle,
+        description: description ?? this.description,
+        formattedDescription: formattedDescription ?? this.formattedDescription,
+        assets: assets ?? this.assets,
+        hcGroups: hcGroups ?? this.hcGroups,
+      );
+
+  factory CardGroup.fromJson(Map<String, dynamic> json) => CardGroup(
+        id: json['id'],
+        slug: json['slug'],
+        title: json['title'],
+        formattedTitle: json["formatted_title"] != null
+            ? FormattedText.fromJson(json["formatted_title"])
+            : null,
+        description: json['description'] ?? '',
+        formattedDescription: json["formatted_description"] != null
+            ? FormattedText.fromJson(json["formatted_description"])
+            : null,
+        assets: json['assets'] ?? {},
+        hcGroups: (json['hc_groups'] as List?)
+                ?.map((group) => HCG.fromJson(group))
+                .toList() ??
+            [],
+      );
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "slug": slug,
+        "title": title,
+        "formatted_title": formattedTitle?.toJson(),
+        "description": description,
+        "formatted_description": formattedDescription?.toJson(),
+        "assets": assets,
+        "hc_groups": List<dynamic>.from(hcGroups.map((x) => x.toJson())),
+      };
 }

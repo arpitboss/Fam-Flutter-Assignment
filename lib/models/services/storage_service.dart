@@ -1,58 +1,68 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class StorageService {
-  static const String _dismissedCardsKey = 'dismissed_cards';
-  static const String _remindLaterCardsKey = 'remind_later_cards';
-  static const String _remindLaterTimePrefix = 'remind_later_time_';
+abstract interface class LocalStorage {
+  Future<void> saveCardState({required String cardId, required String state});
+  String? getCardState({required String cardId});
+  Future<void> clearCardState({required String cardId});
+  List<String> getDismissedCards();
+  List<String> getRemindLaterCards();
+  Future<void> clearAllRemindLaterCards();
+}
 
-  // late initialization of 'SharedPreferences' object to be used later
-  late final SharedPreferences _prefs;
+class LocalStorageImpl implements LocalStorage {
+  final SharedPreferences sharedPreferences;
 
-  // it initializes the 'SharedPreferences' object
-  Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
+  LocalStorageImpl({required this.sharedPreferences});
+
+  // Save card state (Dismissed or Remind Later)
+  @override
+  Future<void> saveCardState(
+      {required String cardId, required String state}) async {
+    await sharedPreferences.setString(cardId, state);
   }
 
-  // function to get the list of 'dismissed cards',or an empty list if none
-  Future<List<String>> getDismissedCards() async {
-    return _prefs.getStringList(_dismissedCardsKey) ?? [];
+  // Get card state (Dismissed or Remind Later)
+  @override
+  String? getCardState({required String cardId}) {
+    return sharedPreferences.getString(cardId);
   }
 
-  // function to add a card to the dismissed list
-  Future<void> addDismissedCard(String cardName) async {
-    final dismissedCards = await getDismissedCards();
-    dismissedCards.add(cardName); // add the new card
-    await _prefs.setStringList(
-        _dismissedCardsKey, dismissedCards); // save updated list
+  // Clear card state (For example when a card is marked as active again)
+  @override
+  Future<void> clearCardState({required String cardId}) async {
+    await sharedPreferences.remove(cardId);
   }
 
-  // function to get list of cards to remind later,or an empty list if none
-  Future<List<String>> getRemindLaterCards() async {
-    return _prefs.getStringList(_remindLaterCardsKey) ?? [];
+  // Get all dismissed cards
+  @override
+  List<String> getDismissedCards() {
+    final keys = sharedPreferences.getKeys();
+    return keys
+        .where((key) => sharedPreferences.getString(key) == 'dismissed')
+        .toList();
   }
 
-  // function to add a card to remind later list and store the current time
-  Future<void> addRemindLaterCard(String cardName) async {
-    final remindLaterCards = await getRemindLaterCards();
-    remindLaterCards.add(cardName); // add the new card
-    await _prefs.setStringList(
-        _remindLaterCardsKey, remindLaterCards); // save updated list
-    await _setRemindLaterTime(cardName); // store the time for later reminder
+  // Get all cards marked for reminder
+  @override
+  List<String> getRemindLaterCards() {
+    final keys = sharedPreferences.getKeys();
+    return keys
+        .where((key) => sharedPreferences.getString(key) == 'remind_later')
+        .toList();
   }
 
-  // function to save the current time when a card is added to remind later
-  Future<void> _setRemindLaterTime(String cardName) async {
-    await _prefs.setString(
-      _remindLaterTimePrefix + cardName, // key is card name with time prefix
-      DateTime.now().toIso8601String(), // save current time as string
-    );
-  }
+  @override
+  Future<void> clearAllRemindLaterCards() async {
+    final keys = sharedPreferences.getKeys();
 
-  // function to get the saved time when the card was added for remind later
-  DateTime? getRemindLaterTime(String cardName) {
-    final timeStr = _prefs.getString(_remindLaterTimePrefix + cardName);
-    return timeStr != null
-        ? DateTime.parse(timeStr)
-        : null; // return the time or null if not found
+    // Get all keys that have 'remind_later' state
+    final remindLaterKeys =
+        keys.where((key) => sharedPreferences.getString(key) == 'remind_later');
+
+    // Remove both the state and timestamp entries for each remind later card
+    for (final key in remindLaterKeys) {
+      await sharedPreferences.remove(key);
+      await sharedPreferences.remove('${key}_timestamp');
+    }
   }
 }

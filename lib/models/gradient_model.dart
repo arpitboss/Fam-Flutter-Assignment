@@ -1,16 +1,22 @@
 class GradientModel {
-  final List<String> colors;
   final double angle;
+  final List<String> colors;
 
   GradientModel({
-    required this.colors,
     required this.angle,
+    required this.colors,
   });
 
   factory GradientModel.fromJson(Map<String, dynamic> json) {
     return GradientModel(
-      colors: (json['colors'] as List?)?.cast<String>() ?? [],
-      angle: json['angle']?.toDouble() ?? 0.0,
+      angle: (json['angle'] as num?)?.toDouble() ?? 0.0,
+      colors:
+          (json['colors'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "angle": angle,
+        "colors": List<dynamic>.from(colors.map((x) => x)),
+      };
 }

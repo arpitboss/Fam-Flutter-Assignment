@@ -1,24 +1,57 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '../../utils/constants/app_constants.dart';
 import '../card_group_model.dart';
 
-class ApiService {
-  String apiUrl = dotenv.env['API_KEY'] ?? '';
+abstract interface class ApiHandler {
+  Future<List<CardGroup>> getCards();
+}
 
-  Future<List<CardGroup>> fetchCardGroups() async {
+class ApiHandlerImplementation implements ApiHandler {
+  final http.Client client;
+
+  ApiHandlerImplementation({required this.client});
+
+  @override
+  Future<List<CardGroup>> getCards() async {
     try {
-      final response = await http.get(Uri.parse(apiUrl));
+      final uri = Uri.parse(ApiConstants.baseUrl).replace(
+        queryParameters: {'slugs': 'famx-paypage'},
+      );
+
+      final response = await client.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 10));
+
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((json) => CardGroup.fromJson(json)).toList();
+        if (response.body.isEmpty) {
+          throw Exception('Empty response received');
+        }
+
+        final List<dynamic> jsonDecodedData = json.decode(response.body);
+        log(jsonDecodedData.runtimeType.toString());
+        return jsonDecodedData
+            .map(
+              (json) => CardGroup.fromJson(json),
+            )
+            .toList();
+      } else if (response.statusCode == 404) {
+        throw Exception('Resource not found');
+      } else if (response.statusCode >= 500) {
+        throw Exception('Server error: ${response.statusCode}');
       } else {
-        throw Exception('Failed to load card groups');
+        throw Exception(
+            'HTTP ${response.statusCode}: ${response.reasonPhrase}');
       }
-    } catch (e) {
-      throw Exception('Error fetching card groups: $e');
+    } on TimeoutException {
+      throw Exception();
     }
   }
 }
