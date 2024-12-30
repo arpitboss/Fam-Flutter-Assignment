@@ -4,16 +4,16 @@ import 'hcg_model.dart';
 import 'text_format_model.dart';
 
 enum DesignType {
-  HC1,
-  HC3,
-  HC5,
-  HC6,
-  HC9;
+  hC1,
+  hC3,
+  hC5,
+  hC6,
+  hC9;
 
   factory DesignType.fromString(String type) {
     return DesignType.values.firstWhere(
       (e) => e.toString() == 'DesignType.$type',
-      orElse: () => HC1,
+      orElse: () => hC1,
     );
   }
 }

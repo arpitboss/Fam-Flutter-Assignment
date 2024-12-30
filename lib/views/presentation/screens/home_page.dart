@@ -60,14 +60,8 @@ class _FamScreenState extends State<FamScreen>
     return Scaffold(
       backgroundColor:
           _showNormalUI ? const Color(0xFFF7F6F3) : Colors.transparent,
-      body: Stack(
-        children: [
-          // Loading screen with animation
-          if (!_showNormalUI) _buildLoadingScreen(),
-
-          // Main UI after animation completion
-          if (_showNormalUI) _buildMainUI(),
-        ],
+      body: SafeArea(
+        child: _showNormalUI ? _buildMainUI() : _buildLoadingScreen(),
       ),
     );
   }
@@ -175,14 +169,14 @@ class _FamScreenState extends State<FamScreen>
   }
 
   Widget _buildCardList() {
-    final hcGroups = _cardController.cardList.first.hcGroups;
+    final hCG = _cardController.cardList.first.hcGroups;
 
-    final sortedHcGroups = [
-      ...hcGroups.where((group) => group.designType == DesignType.HC3),
-      ...hcGroups.where((group) => group.designType == DesignType.HC6),
-      ...hcGroups.where((group) => group.designType == DesignType.HC5),
-      ...hcGroups.where((group) => group.designType == DesignType.HC9),
-      ...hcGroups.where((group) => group.designType == DesignType.HC1),
+    final sortedHCG = [
+      ...hCG.where((group) => group.designType == DesignType.hC3),
+      ...hCG.where((group) => group.designType == DesignType.hC6),
+      ...hCG.where((group) => group.designType == DesignType.hC5),
+      ...hCG.where((group) => group.designType == DesignType.hC9),
+      ...hCG.where((group) => group.designType == DesignType.hC1),
     ];
 
     return Padding(
@@ -192,9 +186,9 @@ class _FamScreenState extends State<FamScreen>
           await _cardController.reloadCards();
         },
         child: ListView.builder(
-          itemCount: sortedHcGroups.length,
+          itemCount: sortedHCG.length,
           itemBuilder: (context, index) {
-            final hcGroup = sortedHcGroups[index];
+            final hcGroup = sortedHCG[index];
             return _buildCardWidget(hcGroup);
           },
         ),
@@ -204,18 +198,18 @@ class _FamScreenState extends State<FamScreen>
 
   Widget _buildCardWidget(HCG hcGroup) {
     switch (hcGroup.designType) {
-      case DesignType.HC1:
+      case DesignType.hC1:
         return LargeCardWidget(hcGroup: hcGroup);
-      case DesignType.HC3:
+      case DesignType.hC3:
         return FlexibleCardWidget(hcGroup: hcGroup);
-      case DesignType.HC5:
+      case DesignType.hC5:
         return ImageCardWidget(hcGroup: hcGroup);
-      case DesignType.HC6:
+      case DesignType.hC6:
         return ArrowCardWidget(hcGroup: hcGroup);
-      case DesignType.HC9:
+      case DesignType.hC9:
         return CompactCardWidget(hcGroup: hcGroup);
       default:
-        return SizedBox(); // Fallback widget
+        return const SizedBox(); // Fallback widget
     }
   }
 }
