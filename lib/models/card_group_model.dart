@@ -1,19 +1,20 @@
 import 'dart:convert';
 
+import 'package:fam_flutter_assignment/models/text_format_model.dart';
+
 import 'hcg_model.dart';
-import 'text_format_model.dart';
 
 enum DesignType {
-  hC1,
-  hC3,
-  hC5,
-  hC6,
-  hC9;
+  HC1,
+  HC3,
+  HC5,
+  HC6,
+  HC9;
 
   factory DesignType.fromString(String type) {
     return DesignType.values.firstWhere(
       (e) => e.toString() == 'DesignType.$type',
-      orElse: () => hC1,
+      orElse: () => HC1,
     );
   }
 }

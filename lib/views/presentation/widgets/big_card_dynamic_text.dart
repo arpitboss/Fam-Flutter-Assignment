@@ -1,3 +1,4 @@
+import 'package:fam_flutter_assignment/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/entity_structure_model.dart';
@@ -11,17 +12,20 @@ class DynamicFormattedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Grab the raw text and the list of styled entities
     String text = formattedTitle.text;
     List<Entity> entities = formattedTitle.entities;
 
+    // This will hold all the text pieces, both plain and styled
     List<InlineSpan> textSpans = [];
     int entityIndex = 0;
 
-    // Split text by "{}" and process each segment
+    // Split the text by "{}" to separate plain text from the styled parts
     text.split("{}").forEach((segment) {
-      // Add the plain text segment
+      // Add the plain text segment if it’s not empty
       if (segment.isNotEmpty) {
         textSpans.add(_buildTextSpan(segment, true));
+        // Add a little space to make things look nicer
         textSpans.add(const WidgetSpan(
           alignment: PlaceholderAlignment.baseline,
           baseline: TextBaseline.alphabetic,
@@ -29,15 +33,15 @@ class DynamicFormattedText extends StatelessWidget {
         ));
       }
 
-      // Add styled text from entities
+      // If there’s a styled entity, add it to the text
       if (entityIndex < entities.length) {
         final entity = entities[entityIndex];
         textSpans.add(_buildTextSpan(entity.text!, false, entity));
-        entityIndex++;
+        entityIndex++; // Move to the next entity
       }
     });
 
-    // Wrap with alignment and return RichText
+    // Wrap everything with the correct alignment and return it
     return Align(
       alignment: _getAlignment(formattedTitle.align),
       child: RichText(
@@ -47,23 +51,25 @@ class DynamicFormattedText extends StatelessWidget {
     );
   }
 
-  // Helper method to create a TextSpan for plain or styled text
+  // Helper to create a TextSpan, either plain or styled
   TextSpan _buildTextSpan(String text, bool isPlainText, [Entity? entity]) {
     TextStyle style = isPlainText
         ? const TextStyle(
-            fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)
+            fontSize: 30,
+            color: AppColors.whiteColor,
+            fontWeight: FontWeight.bold)
         : TextStyle(
-            color: convertHexToColor(entity?.color ?? ""),
-            fontSize: (entity?.fontSize as num?)?.toDouble(),
+            color:
+                convertHexToColor(entity?.color ?? ""), // Convert hex to color
+            fontSize: (entity?.fontSize as num?)?.toDouble(), // Set font size
             fontWeight: (entity?.fontFamily?.contains("bold") ?? false)
                 ? FontWeight.bold
-                : FontWeight.normal,
+                : FontWeight.normal, // Make it bold if needed
           );
-
     return TextSpan(text: text, style: style);
   }
 
-  // Helper: Map align to Flutter alignment
+  // Figure out the alignment based on the string value
   Alignment _getAlignment(String? align) {
     switch (align) {
       case "left":
@@ -73,11 +79,11 @@ class DynamicFormattedText extends StatelessWidget {
       case "center":
         return Alignment.center;
       default:
-        return Alignment.centerLeft;
+        return Alignment.centerLeft; // Default to left if nothing matches
     }
   }
 
-  // Helper: Map align to text alignment
+  // Figure out the text alignment based on the string value
   TextAlign _getTextAlign(String? align) {
     switch (align) {
       case "left":
@@ -87,7 +93,7 @@ class DynamicFormattedText extends StatelessWidget {
       case "center":
         return TextAlign.center;
       default:
-        return TextAlign.left;
+        return TextAlign.left; // Default to left if nothing matches
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fam_flutter_assignment/utils/constants/app_colors.dart';
 import 'package:fam_flutter_assignment/utils/dependencies/init.dart';
 import 'package:fam_flutter_assignment/views/presentation/screens/home_page.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Contextual Cards Functionality',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: AppColors.primaryColor,
         cardTheme: CardTheme(
           elevation: 2,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

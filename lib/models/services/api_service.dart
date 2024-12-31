@@ -20,7 +20,7 @@ class ApiHandlerImplementation implements ApiHandler {
   Future<List<CardGroup>> getCards() async {
     try {
       final uri = Uri.parse(ApiConstants.baseUrl).replace(
-        queryParameters: {'slugs': 'famx-paypage'},
+        queryParameters: {'slugs': ApiConstants.slugParam},
       );
 
       final response = await client.get(
@@ -28,7 +28,7 @@ class ApiHandlerImplementation implements ApiHandler {
         headers: {
           'Content-Type': 'application/json',
         },
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(ApiConstants.timeout);
 
       if (response.statusCode == 200) {
         if (response.body.isEmpty) {
