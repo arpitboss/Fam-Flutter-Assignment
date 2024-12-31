@@ -44,7 +44,7 @@ lib/
 
 ## 📺 **Demo**
 
-![Demo](demo.gif)
+https://github.com/user-attachments/assets/6b2b364e-b897-432b-954b-e57563a3692a
 
 - The demo showcases:
   - **Dynamic rendering** of cards based on API responses.
