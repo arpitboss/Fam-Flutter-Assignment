@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'constants/app_colors.dart';
 
+// convert Hex color to Color
 Color convertHexToColor(String? hexColor) {
   if (hexColor == null || hexColor.isEmpty) return AppColors.blackColor;
   hexColor = hexColor.replaceFirst('#', '');

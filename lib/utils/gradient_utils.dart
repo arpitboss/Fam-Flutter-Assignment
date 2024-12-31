@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'color_utils.dart';
 
+// convert Hex color to Gradient
 LinearGradient convertHexToGradient(GradientModel bgGradient) {
   final radians = bgGradient.angle * (pi / 180);
 

@@ -1,4 +1,5 @@
-class ApiConstants {
+// Constants used throughout the app
+class AppConstants {
   static const String baseUrl =
       "https://polyjuice.kong.fampay.co/mock/famapp/feed/home_section/";
   static const String slugParam = "famx-paypage";

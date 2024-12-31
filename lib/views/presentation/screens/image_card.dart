@@ -11,13 +11,13 @@ class ImageCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 170,
+      height: 170, // Fixed height for the card list
       child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: hcGroup.cards.length,
+        scrollDirection: Axis.horizontal, // Make it scroll horizontally
+        itemCount: hcGroup.cards.length, // Number of cards in the group
         itemBuilder: (context, index) {
           final card = hcGroup.cards[index];
-          return _buildCard(context, card);
+          return _buildCard(context, card); // Build each card
         },
       ),
     );
@@ -27,9 +27,10 @@ class ImageCardWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
-        card.bgImage?.imageUrl ?? "",
-        fit: BoxFit.cover,
-        width: MediaQuery.sizeOf(context).width - 16,
+        card.bgImage?.imageUrl ?? "", // Use provided image or fallback
+        fit: BoxFit.cover, // Ensure the image covers the entire card
+        width:
+            MediaQuery.sizeOf(context).width - 16, // Full width minus padding
       ),
     );
   }

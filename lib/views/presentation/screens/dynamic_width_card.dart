@@ -18,10 +18,11 @@ class FlexibleCardWidget extends StatefulWidget {
 }
 
 class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
-  bool showOptions = false;
+  bool showOptions = false; // Toggle visibility of action buttons
 
   @override
   Widget build(BuildContext context) {
+    // If there are no cards, don’t render anything
     if (widget.hcGroup.cards.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -36,10 +37,10 @@ class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                // Fixed Buttons on the Left
+                // Fixed Buttons on the Left (Remind Later and Dismiss)
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  width: showOptions ? 120 : 0,
+                  width: showOptions ? 120 : 0, // Animate width when toggled
                   curve: Curves.easeInOut,
                   child: showOptions
                       ? Column(
@@ -60,6 +61,7 @@ class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
                   children: widget.hcGroup.cards
                       .map((card) => GestureDetector(
                             onLongPress: () {
+                              // Show action buttons on long press
                               setState(() {
                                 showOptions = true;
                               });
@@ -80,14 +82,16 @@ class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1.0),
       child: SizedBox(
-        width: MediaQuery.sizeOf(context).width - 16,
+        width:
+            MediaQuery.sizeOf(context).width - 16, // Full width minus padding
         child: Stack(
           alignment: Alignment.center,
           children: [
+            // Background Image
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: Image.network(
-                card.bgImage?.imageUrl ?? "",
+                card.bgImage?.imageUrl ?? "", // Use provided image or fallback
                 fit: BoxFit.cover,
                 width: MediaQuery.sizeOf(context).width - 16,
               ),
@@ -99,11 +103,11 @@ class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
               right: 10,
               top: 150,
               child: DynamicFormattedText(
-                formattedTitle: card.formattedTitle!,
+                formattedTitle: card.formattedTitle!, // Display formatted title
               ),
             ),
 
-            // CTA Buttons
+            // CTA Buttons at the Bottom
             Positioned(
               left: 40,
               bottom: 20,
@@ -113,12 +117,15 @@ class _FlexibleCardWidgetState extends State<FlexibleCardWidget> {
                     padding: const EdgeInsets.only(right: 10),
                     child: ElevatedButton(
                       onPressed: () async {
+                        // Open the URL when the button is pressed
                         await urlLauncher(card.url ?? "https://google.com");
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: convertHexToColor(cta.bgColor),
+                        backgroundColor:
+                            convertHexToColor(cta.bgColor), // Set button color
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
                         ),
                       ),
                       child: Text(

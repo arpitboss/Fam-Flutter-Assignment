@@ -11,29 +11,29 @@ class DismissButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CardController cardController = Get.find();
+    final CardController cardController =
+        Get.find(); // Get the card controller instance
     return GestureDetector(
-      onTap: () => cardController.removeCard(id),
+      onTap: () => cardController.removeCard(id), // Remove the card when tapped
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Container(
           height: 80,
           width: 140,
           decoration: BoxDecoration(
-            color: AppColors.backgroundColor,
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.backgroundColor, // Set background color
+            borderRadius: BorderRadius.circular(12), // Rounded corners
           ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  height: 15,
-                ),
-                SvgPicture.asset('assets/icons/dismiss_icon.svg'),
-                const SizedBox(height: 4),
+                const SizedBox(height: 15), // Spacer at the top
+                SvgPicture.asset(
+                    'assets/icons/dismiss_icon.svg'), // Dismiss icon
+                const SizedBox(height: 4), // Spacer between icon and text
                 const Text(
-                  "dismiss now",
+                  "dismiss now", // Button label
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,

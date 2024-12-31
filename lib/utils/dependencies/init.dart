@@ -7,27 +7,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/services/api_service.dart';
 import '../../models/services/storage_service.dart';
 
-final GetIt serviceLocator = GetIt.instance;
+final GetIt serviceLocator =
+    GetIt.instance; // Singleton instance of GetIt for dependency injection
 
 Future<void> setupDependencies() async {
-  // SharedPreferences
+  // Set up SharedPreferences for local storage
   final sharedPreferences = await SharedPreferences.getInstance();
   serviceLocator
       .registerLazySingleton<SharedPreferences>(() => sharedPreferences);
 
-  // HTTP Client
+  // Set up HTTP client for API requests
   serviceLocator.registerLazySingleton<http.Client>(() => http.Client());
 
-  // Data Sources
+  // Register API handler with the HTTP client
   serviceLocator.registerLazySingleton<ApiHandler>(
       () => ApiHandlerImplementation(client: serviceLocator()));
+
+  // Register local storage with SharedPreferences
   serviceLocator.registerLazySingleton<LocalStorage>(
       () => LocalStorageImpl(sharedPreferences: serviceLocator()));
 
+  // Register dependencies with GetX for state management
   Get.lazyPut<ApiHandler>(() => serviceLocator<ApiHandler>());
   Get.lazyPut<LocalStorage>(() => serviceLocator<LocalStorage>());
 
-  // Controller
+  // Register the CardController with its dependencies
   Get.lazyPut<CardController>(() => CardController(
         apiHandler: Get.find<ApiHandler>(),
         localStorage: Get.find<LocalStorage>(),

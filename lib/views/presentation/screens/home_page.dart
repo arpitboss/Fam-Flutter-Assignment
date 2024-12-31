@@ -23,7 +23,7 @@ class _FamScreenState extends State<FamScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  bool _showNormalUI = false;
+  bool _showNormalUI = false; // Toggle between loading and main UI
 
   final CardController _cardController = Get.find<CardController>();
 
@@ -31,6 +31,7 @@ class _FamScreenState extends State<FamScreen>
   void initState() {
     super.initState();
 
+    // Set up the animation controller for the loading screen
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -41,11 +42,11 @@ class _FamScreenState extends State<FamScreen>
       curve: Curves.easeInOut,
     );
 
+    // Start the animation and fetch cards when it’s done
     _animationController.forward().then((_) {
       setState(() {
         _showNormalUI = true;
       });
-      // Fetch cards when the animation completes
       _cardController.retrieveCards();
     });
   }
@@ -84,7 +85,7 @@ class _FamScreenState extends State<FamScreen>
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: SvgPicture.asset(
-            'assets/logos/fampay_logo.svg',
+            'assets/logos/fampay_logo.svg', // Fampay logo
             height: 50,
             width: 50,
           ),
@@ -96,20 +97,27 @@ class _FamScreenState extends State<FamScreen>
   Widget _buildMainUI() {
     return Column(
       children: [
-        _buildAppBar(),
+        _buildAppBar(), // App bar with the Fampay logo
         Expanded(
           child: Obx(() {
+            // Show loading indicator while fetching data
             if (_cardController.isFetching.value) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.orangeFamColor,
                 ),
               );
-            } else if (_cardController.errorMsg.isNotEmpty) {
+            }
+            // Show error message if something went wrong
+            else if (_cardController.errorMsg.isNotEmpty) {
               return _buildErrorState();
-            } else if (_cardController.cardList.isEmpty) {
+            }
+            // Show a message if no cards are available
+            else if (_cardController.cardList.isEmpty) {
               return _buildNoCardsState();
-            } else {
+            }
+            // Display the list of cards
+            else {
               return _buildCardList();
             }
           }),
@@ -124,7 +132,7 @@ class _FamScreenState extends State<FamScreen>
       backgroundColor: AppColors.whiteColor,
       elevation: 0,
       title: SvgPicture.asset(
-        'assets/logos/fampay_logo.svg',
+        'assets/logos/fampay_logo.svg', // Fampay logo in the app bar
         height: 25,
         width: 25,
       ),
@@ -142,7 +150,8 @@ class _FamScreenState extends State<FamScreen>
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => _cardController.reloadCards(),
+            onPressed: () =>
+                _cardController.reloadCards(), // Retry fetching cards
             child: const Text("Retry"),
           ),
         ],
@@ -161,7 +170,7 @@ class _FamScreenState extends State<FamScreen>
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => _cardController.reloadCards(),
+            onPressed: () => _cardController.reloadCards(), // Reload cards
             child: const Text("Show Cards"),
           ),
         ],
@@ -172,6 +181,7 @@ class _FamScreenState extends State<FamScreen>
   Widget _buildCardList() {
     final hCG = _cardController.cardList.first.hcGroups;
 
+    // Sort the card groups by design type for better organization
     final sortedHCG = [
       ...hCG.where((group) => group.designType == DesignType.HC3),
       ...hCG.where((group) => group.designType == DesignType.HC6),
@@ -184,13 +194,14 @@ class _FamScreenState extends State<FamScreen>
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: RefreshIndicator.adaptive(
         onRefresh: () async {
-          await _cardController.reloadCards();
+          await _cardController.reloadCards(); // Pull-to-refresh functionality
         },
         child: ListView.builder(
           itemCount: sortedHCG.length,
           itemBuilder: (context, index) {
             final hcGroup = sortedHCG[index];
-            return _buildCardWidget(hcGroup);
+            return _buildCardWidget(
+                hcGroup); // Build the appropriate card widget
           },
         ),
       ),
@@ -198,6 +209,7 @@ class _FamScreenState extends State<FamScreen>
   }
 
   Widget _buildCardWidget(HCG hcGroup) {
+    // Render the correct widget based on the card’s design type
     switch (hcGroup.designType) {
       case DesignType.HC1:
         return LargeCardWidget(hcGroup: hcGroup);
@@ -210,7 +222,7 @@ class _FamScreenState extends State<FamScreen>
       case DesignType.HC9:
         return CompactCardWidget(hcGroup: hcGroup);
       default:
-        return const SizedBox(); // Fallback widget
+        return const SizedBox(); // Fallback for unsupported types
     }
   }
 }

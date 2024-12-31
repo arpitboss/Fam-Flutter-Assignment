@@ -14,26 +14,26 @@ class LocalStorageImpl implements LocalStorage {
 
   LocalStorageImpl({required this.sharedPreferences});
 
-  // Save card state (Dismissed or Remind Later)
+  // Save the state of a card (e.g., "dismissed" or "remind_later")
   @override
   Future<void> saveCardState(
       {required String cardId, required String state}) async {
     await sharedPreferences.setString(cardId, state);
   }
 
-  // Get card state (Dismissed or Remind Later)
+  // Retrieve the state of a card
   @override
   String? getCardState({required String cardId}) {
     return sharedPreferences.getString(cardId);
   }
 
-  // Clear card state (For example when a card is marked as active again)
+  // Clear the state of a card (e.g., when it’s marked as active again)
   @override
   Future<void> clearCardState({required String cardId}) async {
     await sharedPreferences.remove(cardId);
   }
 
-  // Get all dismissed cards
+  // Get a list of all dismissed cards
   @override
   List<String> getDismissedCards() {
     final keys = sharedPreferences.getKeys();
@@ -42,7 +42,7 @@ class LocalStorageImpl implements LocalStorage {
         .toList();
   }
 
-  // Get all cards marked for reminder
+  // Get a list of all cards marked for reminder
   @override
   List<String> getRemindLaterCards() {
     final keys = sharedPreferences.getKeys();
@@ -51,11 +51,12 @@ class LocalStorageImpl implements LocalStorage {
         .toList();
   }
 
+  // Clear all cards marked for reminder and their associated timestamps
   @override
   Future<void> clearAllRemindLaterCards() async {
     final keys = sharedPreferences.getKeys();
 
-    // Get all keys that have 'remind_later' state
+    // Find all keys with the 'remind_later' state
     final remindLaterKeys =
         keys.where((key) => sharedPreferences.getString(key) == 'remind_later');
 

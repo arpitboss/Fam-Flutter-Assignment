@@ -16,13 +16,13 @@ class CompactCardWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(top: 4.0),
         child: SizedBox(
-          height: hcGroup.height * 1.3,
+          height: hcGroup.height * 1.3, // Adjust height for better spacing
           child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: hcGroup.cards.length,
+            scrollDirection: Axis.horizontal, // Make it scroll horizontally
+            itemCount: hcGroup.cards.length, // Number of cards in the group
             itemBuilder: (context, index) {
               final card = hcGroup.cards[index];
-              return _buildCard(context, card);
+              return _buildCard(context, card); // Build each card
             },
           ),
         ),
@@ -32,15 +32,17 @@ class CompactCardWidget extends StatelessWidget {
 
   Widget _buildCard(BuildContext context, CardModel card) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: const EdgeInsets.only(right: 12.0), // Spacing between cards
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8), // Rounded corners
         child: AspectRatio(
-          aspectRatio: (card.bgImage?.aspectRatio ?? 1.5),
+          aspectRatio: (card.bgImage?.aspectRatio ??
+              1.5), // Use provided aspect ratio or default
           child: Container(
             decoration: BoxDecoration(
               gradient: card.bgGradient != null
-                  ? convertHexToGradient(card.bgGradient!)
+                  ? convertHexToGradient(
+                      card.bgGradient!) // Apply gradient if available
                   : null,
             ),
           ),
